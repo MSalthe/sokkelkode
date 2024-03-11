@@ -7,7 +7,7 @@
 #include "reception_routine.h" 
 
 void setup() {
-  //digitalWrite(1, HIGH); // Turn on the LED
+  digitalWrite(1, HIGH); // Turn on the LED
   delay(1000);
 
   if (DEBUG) { 
@@ -29,8 +29,8 @@ void loop() {
 
   while (client.connected()) {
     if (transmission_routine(&client) != TRANSMISSION_SUCCESS) {
-      // error_handling();
       if (DEBUG) Serial.println("Transmission routine failed.");
+      // error_handling();
     }
 
     if (reception_routine(&client) != RECEPTION_SUCCESS) {

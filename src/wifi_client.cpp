@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 #include "wifi_client.h"
 #include "config.h"
-#include "wifi_client.h"
 
 void inform_connection_error(wl_status_t status) { // TODO add light patterns
   if (DEBUG) Serial.print("\n");
