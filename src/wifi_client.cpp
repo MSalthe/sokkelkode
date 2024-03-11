@@ -3,36 +3,84 @@
 #include "config.h"
 #include "wifi_client.h"
 
-void wait_for_connection() {
-    if (DEBUG) Serial.println("Waiting for WiFi connection.");
-    while (WiFi.status() != WL_CONNECTED) {
-        if (DEBUG) Serial.print(".");
+void inform_connection_error(wl_status_t status) { // TODO add light patterns
+  if (DEBUG) Serial.print("\n");
+  switch (status) {
+    case WL_IDLE_STATUS : 
+      if (DEBUG) Serial.print("IDLE");
+      break;
 
-        // Blink LED while we wait for WiFi
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(250);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(250);
+    case WL_SCAN_COMPLETED : 
+      if (DEBUG) Serial.print("SCANCOMPLETE");
+      break;
+
+    case WL_CONNECT_FAILED : 
+      if (DEBUG) Serial.print("No wifi connection. Retrying.");
+      break;
+
+    case WL_WRONG_PASSWORD : 
+      if (DEBUG) Serial.print("\"");
+      if (DEBUG) Serial.print(WIFI_PASSWORD);
+      if (DEBUG) Serial.print("\" is the wrong WiFi password! Retrying.");
+      break;
+
+    case WL_DISCONNECTED : 
+      if (DEBUG) Serial.print("No server connection. Retrying.");
+      break;  
+
+    case WL_NO_SSID_AVAIL:
+      if (DEBUG) Serial.print("ERROR: Could not find network with SSID \"");
+      if (DEBUG) Serial.print(SSID);
+      if (DEBUG) Serial.print("\". Waiting.");
+      break;
+
+    case WL_CONNECTION_LOST:
+      if (DEBUG) Serial.print("Bruh.");
+      break;
+
+    default:
+      if (DEBUG) Serial.println("WiFi driver PANICKED!");
+      break;
+  }
+}
+
+void wait_for_connection(wl_status_t previous_status) {
+
+  while (WiFi.status() != WL_CONNECTED) {
+    previous_status = WiFi.status();
+    inform_connection_error(previous_status);
+
+    while (WiFi.status() == previous_status) {
+      if (DEBUG) Serial.print(".");
+      delay(500);
     }
+  } if (DEBUG) Serial.println(" Server connection established!");
+
+}
+
+void wait_for_client(WiFiClient* client) {
+  client -> connect(SERVER_IP_STRING, SERVER_PORT);
+  if (DEBUG) Serial.print("\nWaiting for client response on port ");
+  if (DEBUG) Serial.print(SERVER_PORT);
+  if (DEBUG) Serial.print(".");
+
+  while (!client -> connected()) {
+    if (WiFi.status() != WL_CONNECTED) {
+      if (DEBUG) Serial.println("Connection to server lost!");
+      return;
+    }
+
+    client -> connect(SERVER_IP_STRING, SERVER_PORT);
+    if (DEBUG) Serial.print(".");
+    delay(500);
+  } if (DEBUG) Serial.println(" Server connection established!");
 }
 
 void connect_to_host(WiFiClient* client) {
-  while(!client -> connect(SERVER_IP_STRING, SERVER_PORT)) {
-    if (DEBUG) Serial.println("Server connection failed. Retrying...");
-    wait_for_connection(); // Ensure we have a WiFi connection before attempting to connect to the server
+  wl_status_t connection_status = WiFi.status();
+  if (connection_status != WL_CONNECTED) wait_for_connection(connection_status);
 
-    // Unique LED blink pattern to indicate host connection failure
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(50);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(50);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(50);
-    digitalWrite(LED_BUILTIN, LOW);
-
-    delay(500);
-  }
-  if (DEBUG) Serial.println("Connected to server.");
+  if (!client -> connected() && WiFi.status() == WL_CONNECTED) wait_for_client(client);
 }
 
 void disconnect_error_handling(WiFiClient* client) {

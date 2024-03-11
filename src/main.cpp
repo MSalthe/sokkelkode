@@ -3,9 +3,13 @@
 #include "wifi_client.h"
 #include "sensor_simulator.h"
 #include "sensor_data.h"
-#include "transmit_sensor_data.h"
+#include "transmission_routine.h"
+#include "reception_routine.h" 
 
 void setup() {
+  //digitalWrite(1, HIGH); // Turn on the LED
+  delay(1000);
+
   if (DEBUG) { 
     Serial.begin(115200);
     delay(10);
@@ -14,25 +18,28 @@ void setup() {
   if (DEBUG) Serial.println("Connecting to WiFi");
   WiFi.mode(WIFI_STA); // Set to client (station) mode
   WiFi.begin(SSID, WIFI_PASSWORD);
-  wait_for_connection();
+  //wait_for_connection();
 }
 
 WiFiClient client;
-SensorDataIMU sensor_data;
 
 void loop() {
-  if (DEBUG) Serial.println("loop() start");
 
   connect_to_host(&client);
 
-  while (client.connected()) { // Main functionality loop
-    //client.print(String("Hello from ESP8266") + "\r\n");
-    sensor_data = simulate_sensor_sample();
-    transmit_sensor_data(sensor_data, &client);
+  while (client.connected()) {
+    if (transmission_routine(&client) != TRANSMISSION_SUCCESS) {
+      // error_handling();
+      if (DEBUG) Serial.println("Transmission routine failed.");
+    }
+
+    if (reception_routine(&client) != RECEPTION_SUCCESS) {
+      // error_handling();
+    }
+
+    if (DEBUG) Serial.println("\r\n");
     delay(1000);
-  } 
-  
-  disconnect_error_handling(&client);
+  }
 
   delay(1000);
 }
