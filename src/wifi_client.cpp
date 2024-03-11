@@ -17,7 +17,7 @@ void wait_for_connection() {
 }
 
 void connect_to_host(WiFiClient* client) {
-  while(!client -> connect(host, httpPort)) {
+  while(!client -> connect(SERVER_IP_STRING, SERVER_PORT)) {
     if (DEBUG) Serial.println("Server connection failed. Retrying...");
     wait_for_connection(); // Ensure we have a WiFi connection before attempting to connect to the server
 

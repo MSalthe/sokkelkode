@@ -13,7 +13,7 @@ void setup() {
 
   if (DEBUG) Serial.println("Connecting to WiFi");
   WiFi.mode(WIFI_STA); // Set to client (station) mode
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, WIFI_PASSWORD);
   wait_for_connection();
 }
 
@@ -23,16 +23,16 @@ SensorDataIMU sensor_data;
 void loop() {
   if (DEBUG) Serial.println("loop() start");
 
-  //connect_to_host();
+  connect_to_host(&client);
 
   while (client.connected()) { // Main functionality loop
     //client.print(String("Hello from ESP8266") + "\r\n");
     sensor_data = simulate_sensor_sample();
-    transmit_sensor_data(sensor_data);
+    transmit_sensor_data(sensor_data, &client);
     delay(1000);
   } 
   
-  disconnect_error_handling();
+  disconnect_error_handling(&client);
 
   delay(1000);
 }
