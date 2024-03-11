@@ -1,8 +1,9 @@
 #include <ESP8266WiFi.h>
 #include "config.h"
 #include "wifi_client.h"
-#include "sensor_emulator.h"
+#include "sensor_simulator.h"
 #include "sensor_data.h"
+#include "transmit_sensor_data.h"
 
 void setup() {
   if (DEBUG) { 
@@ -16,17 +17,18 @@ void setup() {
   wait_for_connection();
 }
 
-SensorData sensor_data;
+WiFiClient client;
+SensorDataIMU sensor_data;
 
 void loop() {
   if (DEBUG) Serial.println("loop() start");
 
-  connect_to_host();
+  //connect_to_host();
 
-  while (client.connected()) { // Main loop
-    client.print(String("Hello from ESP8266") + "\r\n");
+  while (client.connected()) { // Main functionality loop
+    //client.print(String("Hello from ESP8266") + "\r\n");
     sensor_data = simulate_sensor_sample();
-    
+    transmit_sensor_data(sensor_data);
     delay(1000);
   } 
   

@@ -16,8 +16,8 @@ void wait_for_connection() {
     }
 }
 
-void connect_to_host() {
-  while(!client.connect(host, httpPort)) {
+void connect_to_host(WiFiClient* client) {
+  while(!client -> connect(host, httpPort)) {
     if (DEBUG) Serial.println("Server connection failed. Retrying...");
     wait_for_connection(); // Ensure we have a WiFi connection before attempting to connect to the server
 
@@ -35,8 +35,8 @@ void connect_to_host() {
   if (DEBUG) Serial.println("Connected to server.");
 }
 
-void disconnect_error_handling() {
+void disconnect_error_handling(WiFiClient* client) {
     digitalWrite(LED_BUILTIN, HIGH); // Solid LED to indicates error state
-    if (DEBUG) Serial.println("Disconnected from server. Error code: " + String(client.getWriteError()));
+    if (DEBUG) Serial.println("Disconnected from server. Error code: " + String(client -> getWriteError()));
     delay(50);
 }

@@ -1,10 +1,14 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #define DEBUG 1
 
 // Wifi credentials
-const char *ssid = "esptest";
-const char *password = "12345678";
+#define SSID "esptest"
+#define WIFI_PASSWORD "12345678"
 
-// Server details
-WiFiClient client;
-  const char * host = "192.168.76.206";
-  const int httpPort = 6634;
+// Server credentials
+#define SERVER_IP_STRING "192.168.76.206";
+#define SERVER_PORT = 6634;
+
+#endif

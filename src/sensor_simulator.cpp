@@ -1,9 +1,11 @@
 #include <Arduino.h>
 #include "sensor_data.h"
-#include "sensor_emulator.h"
+#include "sensor_simulator.h"
+#include "config.h"
 
-SensorData simulate_sensor_sample() {
-    SensorData sensor_data;
+SensorDataIMU simulate_sensor_sample() {
+    if (DEBUG) Serial.println("Simulating sensor sample");
+    SensorDataIMU sensor_data;
     for (auto IMU_value : sensor_data.IMU) {
         IMU_value = random(0, 100);
     }
