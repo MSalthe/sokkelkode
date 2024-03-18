@@ -5,14 +5,18 @@
 #include "sensor_data.h"
 #include "transmission_routine.h"
 #include "reception_routine.h" 
+#include "main_routine.h"
 
 // Devices
 WiFiClient client;
 DFRobot_BMI160 bmi160;
 
 // Containers
-SensorDataContainer_IMU sensor_data_container;
+SensorDataContainer_IMU sensor_data_container(&bmi160); // Holds data from the IMU sensor (accelerometer and gyroscope
 IMU_sensor_reading sensor_reading_container; // Holds one reading from the IMU sensor
+
+// Timing
+int update_delay = min(TRANSMISSION_INTERVAL, SENSOR_UPDATE_INTERVAL); // ms
 
 void setup() {
 
@@ -24,7 +28,7 @@ void setup() {
 
   if (DEBUG) Serial.println("Connecting to WiFi");
   WiFi.mode(WIFI_STA); // Set to client (station) mode
-  WiFi.begin(SSID, WIFI_PASSWORD);
+  WiFi.begin(SSID_STRING, WIFI_PASSWORD);
 
   while (bmi160.I2cInit() != BMI160_OK) {
     if (DEBUG) Serial.println("Sensor initialization failed. Retrying in 1000ms.");
@@ -33,18 +37,17 @@ void setup() {
 }
 
 void loop() {
-
   connect_to_host(&client);
 
   while (client.connected()) {
-    sensor_data_container.sample_IMU(); // Todo error checking for debugging
+    
 
-    sensor_data_container.update_reading(&sensor_reading_container); // Todo error checking for debugging
-
-    transmit_IMU_sensor_reading(&sensor_reading_container, &client); // Todo error checking for debugging
-
-    delay(1);
+    main_routine(&client, &bmi160, &sensor_data_container, &sensor_reading_container);
+    
+    delay(update_delay);
   }
 
-  delay(1000);
+  // Todo separate timers for sensor sampling and transmission
+
+  delay(RECONNECT_DELAY);
 }

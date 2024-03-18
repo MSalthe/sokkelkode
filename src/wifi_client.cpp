@@ -29,7 +29,7 @@ void inform_connection_error(wl_status_t status) { // TODO add light patterns
 
     case WL_NO_SSID_AVAIL:
       if (DEBUG) Serial.print("ERROR: Could not find network with SSID \"");
-      if (DEBUG) Serial.print(SSID);
+      if (DEBUG) Serial.print(SSID_STRING);
       if (DEBUG) Serial.print("\". Waiting.");
       break;
 
