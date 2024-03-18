@@ -32,21 +32,21 @@ void loop() {
 
   connect_to_host(&client);
 
-  while (client.connected()) {
-    if (transmission_routine(&client) != TRANSMISSION_SUCCESS) {
-      if (DEBUG) Serial.println("Transmission routine failed.");
-      // error_handling();
-    }
+  // while (client.connected()) {
+  //   if (transmission_routine(&client) != TRANSMISSION_SUCCESS) {
+  //     if (DEBUG) Serial.println("Transmission routine failed.");
+  //     // error_handling();
+  //   }
 
-    if (reception_routine(&client) != RECEPTION_SUCCESS) {
-      // error_handling();
-    }
+  //   if (reception_routine(&client) != RECEPTION_SUCCESS) {
+  //     // error_handling();
+  //   }
 
-    if (TELEMETRY_DEBUG) Serial.println("\r\n");
+  //   if (TELEMETRY_DEBUG) Serial.println("\r\n");
 
-    //test_sensor_sampling();
-    delay(10);
-  }
+  //   //test_sensor_sampling();
+  //   delay(1);
+  // }
 
   delay(1000);
 }

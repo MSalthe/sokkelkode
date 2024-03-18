@@ -2,4 +2,4 @@
 
 #include "sensor_data.h"
 
-SensorDataIMU simulate_sensor_sample();
+//SensorDataIMU simulate_sensor_sample();

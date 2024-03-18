@@ -10,4 +10,4 @@ enum SensorStatus {
 
 SensorStatus init_sensors();
 
-SensorStatus sample_sensors(SensorDataIMU* sensor_data);
+//SensorStatus sample_sensors(SensorDataIMU* sensor_data);
