@@ -10,3 +10,4 @@ typedef enum Transmission {
 
 void transmit_sensor_data(SensorDataIMU sensor_data, WiFiClient* client);
 Transmission transmission_routine(WiFiClient* client);
+void test_sensor_sampling();

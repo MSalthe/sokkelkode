@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #define DEBUG 1
+#define TELEMETRY_DEBUG 0
 
 // Wifi credentials
 #define SSID "esptest"

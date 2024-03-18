@@ -19,7 +19,6 @@ void setup() {
   if (DEBUG) Serial.println("Connecting to WiFi");
   WiFi.mode(WIFI_STA); // Set to client (station) mode
   WiFi.begin(SSID, WIFI_PASSWORD);
-  //wait_for_connection();
 
   while (init_sensors() != SENSOR_INIT_SUCCESS) {
     if (DEBUG) Serial.println("Sensor initialization failed. Retrying in 1s.");
@@ -43,8 +42,10 @@ void loop() {
       // error_handling();
     }
 
-    if (DEBUG) Serial.println("\r\n");
-    delay(1000);
+    if (TELEMETRY_DEBUG) Serial.println("\r\n");
+
+    //test_sensor_sampling();
+    delay(10);
   }
 
   delay(1000);

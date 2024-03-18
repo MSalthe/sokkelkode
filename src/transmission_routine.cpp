@@ -6,7 +6,7 @@
 SensorDataIMU sensor_data;
 
 String package_sensor_data_JSON_lib(SensorDataIMU* sensor_data) {
-    if (DEBUG) Serial.println("Packaging sensor data for JSON lib");
+    if (TELEMETRY_DEBUG) Serial.println("Packaging sensor data for JSON lib");
     
     JsonDocument doc;
 
@@ -21,21 +21,27 @@ String package_sensor_data_JSON_lib(SensorDataIMU* sensor_data) {
     String package;
     serializeJson(doc, package);
 
-    if (DEBUG) Serial.println("Sensor data packaged for JSON lib: ");
-    if (DEBUG) Serial.println(package);
+    if (TELEMETRY_DEBUG) Serial.println("Sensor data packaged for JSON lib: ");
+    if (TELEMETRY_DEBUG) Serial.println(package);
 
     return package;
 }
 
 void transmit_sensor_data(SensorDataIMU sensor_data, WiFiClient* client) {
-    if (DEBUG) Serial.println("Transmitting sensor data");
+    if (TELEMETRY_DEBUG) Serial.println("Transmitting sensor data");
     String package = package_sensor_data_JSON_lib(&sensor_data);
     client -> print(package);
-    if (DEBUG) Serial.println("Sensor data transmitted");
+    if (TELEMETRY_DEBUG) Serial.println("Sensor data transmitted");
 } 
 
 Transmission transmission_routine(WiFiClient* client) {
     sample_sensors(&sensor_data);
     transmit_sensor_data(sensor_data, client);
     return TRANSMISSION_SUCCESS;
+}
+
+void test_sensor_sampling() {
+    sample_sensors(&sensor_data);
+    Serial.print("Accel: " + String(sensor_data.IMU[0]) + " " + String(sensor_data.IMU[1]) + " " + String(sensor_data.IMU[2]) + "\n");
+    Serial.print("Gyro: " + String(sensor_data.gyro[0]) + " " + String(sensor_data.gyro[1]) + " " + String(sensor_data.gyro[2]) + "\n");
 }
