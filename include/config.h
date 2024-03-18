@@ -3,7 +3,7 @@
 
 // Debugging
 #define DEBUG 1
-#define TELEMETRY_DEBUG 0
+#define TELEMETRY_DEBUG 1
 
 // Wifi credentials
 #define SSID "esptest"

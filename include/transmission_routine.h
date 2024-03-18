@@ -5,9 +5,14 @@
 
 typedef enum Transmission {
     TRANSMISSION_SUCCESS,
-    TRANSMISSION_FAILURE
+    TRANSMISSION_FAILURE_NO_JSON,
+    TRANSMISSION_FAILURE_NO_TRANSMISSION
 } Transmission;
 
-//void transmit_sensor_data(SensorDataIMU sensor_data, WiFiClient* client);
-Transmission transmission_routine(WiFiClient* client);
-void test_sensor_sampling();
+typedef enum JSON_packaging_status {
+    JSON_PACKAGING_SUCCESS,
+    JSON_PACKAGING_FAILURE_ASSIGNMENT_FAILED,
+    JSON_PACKAGING_FAILURE_SERIALIZATION_FAILED
+} JSON_packaging_status;
+
+Transmission transmit_IMU_sensor_reading(IMU_sensor_reading* IMU_sensor_reading, WiFiClient* client);

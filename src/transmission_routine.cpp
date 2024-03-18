@@ -1,41 +1,47 @@
 #include "transmission_routine.h"
 #include "config.h"
 #include <ArduinoJson.h>
-#include "sensor_sampling.h"
 
-SensorDataContainer_IMU sensor_data;
+extern SensorDataContainer_IMU sensor_data;
 
-String package_sensor_data_JSON_lib(SensorDataContainer_IMU* sensor_data) {
-    if (TELEMETRY_DEBUG) Serial.println("Packaging sensor data for JSON lib");
-    
+String json_string;
+
+static JSON_packaging_status package_IMU_sensor_reading_JSON(IMU_sensor_reading* sensor_reading, String* json_string) {    
     JsonDocument doc;
 
-    // doc["accel"][0] = sensor_data -> IMU[0];
-    // doc["accel"][1] = sensor_data -> IMU[1];
-    // doc["accel"][2] = sensor_data -> IMU[2];
+    doc["accel"][0] = sensor_reading -> accel[0];
+    doc["accel"][1] = sensor_reading -> accel[1];
+    doc["accel"][2] = sensor_reading -> accel[2];
 
-    // doc["gyro"][0] = sensor_data -> gyro[0];
-    // doc["gyro"][1] = sensor_data -> gyro[1];
-    // doc["gyro"][2] = sensor_data -> gyro[2];
+    doc["gyro"][0] = sensor_reading -> gyro[0];
+    doc["gyro"][1] = sensor_reading -> gyro[1];
+    doc["gyro"][2] = sensor_reading -> gyro[2];
 
     String package;
-    serializeJson(doc, package);
+    
+    serializeJson(doc, package); // Warning: no error checking
 
     if (TELEMETRY_DEBUG) Serial.println("Sensor data packaged for JSON lib: ");
     if (TELEMETRY_DEBUG) Serial.println(package);
 
-    return package;
+    *json_string = package;
+
+    return JSON_PACKAGING_SUCCESS;
 }
 
-void transmit_sensor_data(SensorDataContainer_IMU sensor_data, WiFiClient* client) {
+Transmission transmit_IMU_sensor_reading(IMU_sensor_reading* sensor_reading, WiFiClient* client) {
+    if (TELEMETRY_DEBUG) Serial.println("Generating JSON string for IMU sensor reading");
+    if (package_IMU_sensor_reading_JSON(sensor_reading, &json_string) != JSON_PACKAGING_SUCCESS) {
+        if (TELEMETRY_DEBUG) Serial.println("JSON packaging failed");
+        return TRANSMISSION_FAILURE_NO_JSON;
+    }
+    
     if (TELEMETRY_DEBUG) Serial.println("Transmitting sensor data");
-    String package = package_sensor_data_JSON_lib(&sensor_data);
-    client -> print(package);
-    if (TELEMETRY_DEBUG) Serial.println("Sensor data transmitted");
-} 
+    if (client -> print(json_string) != 0) {
+        if (TELEMETRY_DEBUG) Serial.println("Transmission failed");
+        return TRANSMISSION_FAILURE_NO_TRANSMISSION;
+    }
 
-Transmission transmission_routine(WiFiClient* client) {
-    //sample_sensors(&sensor_data);
-    transmit_sensor_data(sensor_data, client);
+    if (TELEMETRY_DEBUG) Serial.println("Sensor data transmitted");
     return TRANSMISSION_SUCCESS;
-}
+} 
