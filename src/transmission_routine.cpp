@@ -1,6 +1,7 @@
 #include "transmission_routine.h"
 #include "config.h"
 #include <ArduinoJson.h>
+#include "sensor_sampling.h"
 
 SensorDataIMU sensor_data;
 
@@ -34,7 +35,7 @@ void transmit_sensor_data(SensorDataIMU sensor_data, WiFiClient* client) {
 } 
 
 Transmission transmission_routine(WiFiClient* client) {
-    sensor_data = simulate_sensor_sample();
+    sample_sensors(&sensor_data);
     transmit_sensor_data(sensor_data, client);
     return TRANSMISSION_SUCCESS;
 }

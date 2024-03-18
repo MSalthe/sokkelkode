@@ -5,6 +5,7 @@
 #include "sensor_data.h"
 #include "transmission_routine.h"
 #include "reception_routine.h" 
+#include "sensor_sampling.h"
 
 void setup() {
   digitalWrite(1, HIGH); // Turn on the LED
@@ -19,6 +20,11 @@ void setup() {
   WiFi.mode(WIFI_STA); // Set to client (station) mode
   WiFi.begin(SSID, WIFI_PASSWORD);
   //wait_for_connection();
+
+  while (init_sensors() != SENSOR_INIT_SUCCESS) {
+    if (DEBUG) Serial.println("Sensor initialization failed. Retrying in 1s.");
+    delay(1000);
+  }
 }
 
 WiFiClient client;

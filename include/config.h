@@ -8,7 +8,7 @@
 #define WIFI_PASSWORD "12345678"
 
 // Server credentials
-#define SERVER_IP_STRING "192.168.76.206"
-#define SERVER_PORT 6634
+#define SERVER_IP_STRING "192.168.177.206"
+#define SERVER_PORT 7090
 
 #endif
