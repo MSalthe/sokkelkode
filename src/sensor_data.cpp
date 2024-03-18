@@ -12,11 +12,11 @@ SensorDataContainer_IMU::SensorDataContainer_IMU() {
     }
 }
 
-int16_t SensorDataContainer_IMU::get_average(int16_t* array[MOVING_AVERAGE_LENGTH]) {
+int16_t SensorDataContainer_IMU::get_average_of_axis(int16_t* sensor_moving_average, int len) { // Can be generalized
     int32_t sum = 0;
 
-    for (int i = 0; i < MOVING_AVERAGE_LENGTH; i++) {
-        sum += *array[i];
+    for (int i = 0; i < len; i++) {
+        sum += sensor_moving_average[i];
     }
 
     return sum / MOVING_AVERAGE_LENGTH;
@@ -37,13 +37,15 @@ SensorStatus SensorDataContainer_IMU::sample_IMU() {
     return SENSOR_SAMPLE_SUCCESS;
 }
 
-IMU_sensor_reading SensorDataContainer_IMU::get_reading(IMU_sensor_reading* sensor_reading_container) {
-    IMU_sensor_reading reading;
-
+void SensorDataContainer_IMU::update_reading(IMU_sensor_reading* sensor_reading_container) { // Updates a container instead of returning a reading. Faster.
     for (int i = 0; i < 3; i++) {
-        reading.accel[i] = get_average(&accel[i]);
-        reading.gyro[i] = get_average(&gyro[i]);
+        sensor_reading_container -> accel[i] = get_average_of_axis(accel[i], MOVING_AVERAGE_LENGTH);
+        sensor_reading_container -> gyro[i] = get_average_of_axis(gyro[i], MOVING_AVERAGE_LENGTH);
     }
+}
 
-    return reading;
+IMU_sensor_reading SensorDataContainer_IMU::get_reading() { // Returns current reading instead of updating a container. Slower.
+    IMU_sensor_reading sensor_reading_container;
+    update_reading(&sensor_reading_container);
+    return sensor_reading_container;
 }

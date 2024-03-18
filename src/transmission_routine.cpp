@@ -30,18 +30,13 @@ static JSON_packaging_status package_IMU_sensor_reading_JSON(IMU_sensor_reading*
 }
 
 Transmission transmit_IMU_sensor_reading(IMU_sensor_reading* sensor_reading, WiFiClient* client) {
-    if (TELEMETRY_DEBUG) Serial.println("Generating JSON string for IMU sensor reading");
     if (package_IMU_sensor_reading_JSON(sensor_reading, &json_string) != JSON_PACKAGING_SUCCESS) {
-        if (TELEMETRY_DEBUG) Serial.println("JSON packaging failed");
         return TRANSMISSION_FAILURE_NO_JSON;
     }
     
-    if (TELEMETRY_DEBUG) Serial.println("Transmitting sensor data");
-    if (client -> print(json_string) != 0) {
-        if (TELEMETRY_DEBUG) Serial.println("Transmission failed");
+    if (client -> print(json_string) == 0) {
         return TRANSMISSION_FAILURE_NO_TRANSMISSION;
     }
 
-    if (TELEMETRY_DEBUG) Serial.println("Sensor data transmitted");
     return TRANSMISSION_SUCCESS;
 } 

@@ -5,18 +5,18 @@
 
 #include "config.h"
 
-enum SensorStatus {
+typedef enum SensorStatus {
     SENSOR_INIT_SUCCESS,
     SENSOR_INIT_FAILURE,
 
     SENSOR_SAMPLE_SUCCESS,
     SENSOR_SAMPLE_FAILURE
-};
+} SensorStatus;
 
-struct IMU_sensor_reading {
+typedef struct IMU_sensor_reading {
     int16_t accel[3];
     int16_t gyro[3];
-};
+} IMU_sensor_reading;
 
 // Optimized for fewer operations -> better battery life
 class SensorDataContainer_IMU {
@@ -33,7 +33,7 @@ class SensorDataContainer_IMU {
 
     int array_pointer = 0;
 
-    int16_t get_average(int16_t* array[MOVING_AVERAGE_LENGTH]);
+    int16_t get_average_of_axis(int16_t* sensor_axis_moving_average, int len);
 
     public: 
         // Constructor
@@ -41,5 +41,7 @@ class SensorDataContainer_IMU {
         
         SensorStatus sample_IMU(); // Sample the IMU sensor and add the sample to the moving average
 
-        IMU_sensor_reading get_reading(IMU_sensor_reading* sensor_reading_container); // Returns the moving average of the sensor data
+        void update_reading(IMU_sensor_reading* sensor_reading_container); 
+
+        IMU_sensor_reading get_reading(); // Get the current reading from the IMU sensor
 };

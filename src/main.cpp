@@ -37,11 +37,12 @@ void loop() {
   connect_to_host(&client);
 
   while (client.connected()) {
-    sensor_data_container.sample_IMU();
-    sensor_data_container.get_reading(&sensor_reading_container);
-    if (transmit_IMU_sensor_reading(&sensor_reading_container, &client) != TRANSMISSION_SUCCESS) {
-      if (DEBUG) Serial.println("Transmission failed.");
-    }
+    sensor_data_container.sample_IMU(); // Todo error checking for debugging
+
+    sensor_data_container.update_reading(&sensor_reading_container); // Todo error checking for debugging
+
+    transmit_IMU_sensor_reading(&sensor_reading_container, &client); // Todo error checking for debugging
+
     delay(1);
   }
 
