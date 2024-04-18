@@ -11,7 +11,10 @@
 
 // Server credentials
 #define SERVER_IP_STRING "192.168.177.206"
-#define SERVER_PORT 7090
+#define MESSAGE_PORT    7090
+#define LOGIN_PORT      MESSAGE_PORT + 1 // For getting assigned an ID
+#define TX_PORT         MESSAGE_PORT + 2 
+#define RX_PORT         MESSAGE_PORT + 3
 
 // Sensor sampling defaults
 #define ACCEL_MOVING_AVERAGE_LENGTH 10
