@@ -2,6 +2,7 @@
 #include <vector>
 
 // Constructor, destructor
+
 SensorDataContainer_IMU::SensorDataContainer_IMU(DFRobot_BMI160* bmi160) 
     : bmi160(bmi160) {
     for (int i = 0; i < 3; i++) {
@@ -18,6 +19,7 @@ SensorDataContainer_IMU::~SensorDataContainer_IMU() {
 }
 
 // Settings
+
 void SensorDataContainer_IMU::set_accel_moving_average_length(int length) {
     accel_moving_average_length = length;
 }
@@ -27,10 +29,19 @@ void SensorDataContainer_IMU::set_gyro_moving_average_length(int length) {
 }
 
 // Functionality
+
+// Sample IMU, update arrays.
+// Moves the array pointer to the next position, and if the array is full, it resets the pointer to 0.
+// This saves processing power by not moving more than one element in the array for each sample.
 SensorStatus SensorDataContainer_IMU::sample_IMU() {
     int16_t IMU_sample[6];
-    if (bmi160 -> getSensorData(3, IMU_sample)) { // Returns 1 if failed
+    if (bmi160 -> getSensorData(3, IMU_sample)) {
         return SENSOR_SAMPLE_FAILURE; 
+    }
+
+    array_pointer++;
+    if (array_pointer >= accel_moving_average_length) {
+        array_pointer = 0;
     }
 
     for (int i = 0; i < 3; i++) {
@@ -41,14 +52,16 @@ SensorStatus SensorDataContainer_IMU::sample_IMU() {
     return SENSOR_SAMPLE_SUCCESS;
 }
 
-void SensorDataContainer_IMU::update_reading(IMU_sensor_reading* sensor_reading_container) { // Updates a container instead of returning a reading. Faster.
+// Update reading. Runs on demand to save processing power [can sample IMU without updating reading].
+void SensorDataContainer_IMU::update_reading(IMU_sensor_reading* sensor_reading_container) { 
     for (int i = 0; i < 3; i++) {
         sensor_reading_container -> accel[i] = get_average_of_axis(accel[i], accel_moving_average_length);
         sensor_reading_container -> gyro[i] = get_average_of_axis(gyro[i], gyro_moving_average_length);
     }
 }
 
-IMU_sensor_reading SensorDataContainer_IMU::get_reading() { // Returns current reading instead of updating a container. Slower.
+// Returns current reading instead of updating a container. Slower, legacy function.
+IMU_sensor_reading SensorDataContainer_IMU::get_reading() { 
     IMU_sensor_reading sensor_reading_container;
     update_reading(&sensor_reading_container);
     return sensor_reading_container;

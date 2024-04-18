@@ -22,7 +22,7 @@ void set_moving_average(String flag, int value, SensorDataContainer_IMU* sensor_
 void set_update_interval(String flag, int value, SensorDataContainer_IMU* sensor_data_container) {
     if (DEBUG) Serial.print("\nSet update interval for " + flag + " to " + value + "\n");
     
-    if (flag == "sensor") {
+    if (flag == "sampling") {
         sensor_update_interval = value;
     }else if (flag == "transmission") {
         transmission_interval = value;
@@ -40,8 +40,6 @@ CommandLine command_handler(JsonDocument deserialized_command, SensorDataContain
     }else if (command == "dummy_2") {
         dummy_function_2(value);
         return COMMAND_SUCCESS;
-    }else if (command == "panic") {
-        return COMMAND_PANIC;
     }else if(command == "setmovingaverage") {
         set_moving_average(flag, value, sensor_data);
         return COMMAND_SUCCESS;
