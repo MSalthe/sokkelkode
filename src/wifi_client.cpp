@@ -54,9 +54,9 @@ void wait_for_connection(wl_status_t previous_status) {
 
     while (WiFi.status() == previous_status) {
       if (DEBUG) Serial.print(".");
-      digitalWrite(3, HIGH); // Blinking LED to indicate waiting for connection
+      digitalWrite(1, HIGH); // Blinking LED to indicate waiting for connection
       delay(500);
-      digitalWrite(3, LOW);
+      digitalWrite(1, LOW);
       delay(500);
     }
   } if (DEBUG) Serial.println(" Server connection established!");
@@ -91,7 +91,7 @@ void connect_to_host(WiFiClient* client) {
 }
 
 void disconnect_error_handling(WiFiClient* client) {
-    digitalWrite(LED_BUILTIN, HIGH); // Solid LED to indicate error state
+    digitalWrite(1, HIGH); // Solid LED to indicate error state
     if (DEBUG) Serial.println("Disconnected from server. Error code: " + String(client -> getWriteError()));
     delay(50);
 }
