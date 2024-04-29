@@ -9,13 +9,13 @@ String json_string;
 static JSON_packaging_status package_IMU_sensor_reading_JSON(IMU_sensor_reading* sensor_reading, String* json_string) {    
     JsonDocument doc;
 
-    doc["accel"][0] = sensor_reading -> accel[0];
-    doc["accel"][1] = sensor_reading -> accel[1];
-    doc["accel"][2] = sensor_reading -> accel[2];
+    doc["accel_x"] = sensor_reading -> accel[0];
+    doc["accel_y"] = sensor_reading -> accel[1];
+    doc["accel_z"] = sensor_reading -> accel[2];
 
-    doc["gyro"][0] = sensor_reading -> gyro[0];
-    doc["gyro"][1] = sensor_reading -> gyro[1];
-    doc["gyro"][2] = sensor_reading -> gyro[2];
+    doc["gyro_x"] = sensor_reading -> gyro[0];
+    doc["gyro_y"] = sensor_reading -> gyro[1];
+    doc["gyro_z"] = sensor_reading -> gyro[2];
 
     String package;
     

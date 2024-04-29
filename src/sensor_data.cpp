@@ -60,7 +60,7 @@ void SensorDataContainer_IMU::update_reading(IMU_sensor_reading* sensor_reading_
     }
 }
 
-// Returns current reading instead of updating a container. Slower, legacy function.
+// Adheres to functional programming principles, but is probably slower.
 IMU_sensor_reading SensorDataContainer_IMU::get_reading() { 
     IMU_sensor_reading sensor_reading_container;
     update_reading(&sensor_reading_container);
@@ -68,7 +68,7 @@ IMU_sensor_reading SensorDataContainer_IMU::get_reading() {
 }
 
 // Helper functions
-int16_t SensorDataContainer_IMU::get_average_of_axis(int16_t* sensor_moving_average, int len) { // Can be generalized
+int16_t SensorDataContainer_IMU::get_average_of_axis(int16_t* sensor_moving_average, int len) { // Can be generalized in the future
     int32_t sum = 0;
 
     for (int i = 0; i < len; i++) {

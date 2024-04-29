@@ -5,7 +5,7 @@
 #include "sensor_data.h"
 #include "transmission_routine.h"
 #include "reception_routine.h" 
-#include "main_routine.h"
+#include "light_controller.h"
 
 // Devices
 WiFiClient client;
@@ -17,6 +17,10 @@ IMU_sensor_reading sensor_reading_container; // Holds one reading from the IMU s
 
 // Timing
 int update_delay = min(TRANSMISSION_INTERVAL, SENSOR_UPDATE_INTERVAL); // ms
+
+// Identifiers
+int session_id = -1;
+int client_id = -1;
 
 void setup() {
 
@@ -36,13 +40,49 @@ void setup() {
   }
 }
 
+LightController light_controller;
+
+// Timing
+int sensor_update_interval = SENSOR_UPDATE_INTERVAL; // ms
+unsigned long sensor_last_update = 0;
+
+int transmission_interval = TRANSMISSION_INTERVAL; // ms
+unsigned long transmission_last_update = 0;
+
+//int light_period = LIGHT_INTERVAL / LIGHT_FRAME_COUNT; // ms
+int light_period = 10; // ms
+unsigned long light_last_update = 0;
+
 void loop() {
   connect_to_host(&client);
 
   while (client.connected()) {
-    
 
-    main_routine(&client, &bmi160, &sensor_data_container, &sensor_reading_container);
+    // Sample sensors
+    if (millis() - sensor_last_update > sensor_update_interval) {
+        sensor_last_update = millis();
+        
+        sensor_data_container.sample_IMU(); // Todo error checking for debugging
+        sensor_data_container.update_reading(&sensor_reading_container); // Todo error checking for debugging
+    }
+    
+    // Transmit, receive
+    if (millis() - transmission_last_update > transmission_interval) {
+        transmission_last_update = millis();
+    
+        transmit_IMU_sensor_reading(&sensor_reading_container, &client); // todo class
+        reception_routine(&client, &sensor_data_container); // Todo class
+    }    
+
+    // Update lights
+    if (millis() - light_last_update > light_period) {
+        light_last_update = millis();
+
+        light_controller.update();
+        if (DEBUG) Serial.println("Light update");
+        light_controller.set_pattern(&light_controller.CONNECTED_IDLE);
+        light_controller.dump_pattern();
+    }
     
     delay(update_delay);
   }
