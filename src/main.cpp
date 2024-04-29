@@ -30,6 +30,8 @@ void setup() {
     delay(10);
   }
 
+  pinMode(1, OUTPUT);
+
   if (DEBUG) Serial.println("Connecting to WiFi");
   WiFi.mode(WIFI_STA); // Set to client (station) mode
   WiFi.begin(SSID_STRING, WIFI_PASSWORD);

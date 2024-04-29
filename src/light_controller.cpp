@@ -24,8 +24,9 @@ void LightController::generate_light_frames(LightPattern* pattern) {
     }
 
     if (pattern -> type == STATIC) {
-        for (int frame = 0; frame < LIGHT_FRAME_COUNT; frame++) {
-            if (pattern -> strength > frame * 10 / LIGHT_FRAME_COUNT) {
+        // Alternate between on and off at frequency specified by strength
+        for(int frame = 0; frame < LIGHT_FRAME_COUNT; frame++) {
+            if (frame % (11 - pattern -> strength) == 0) {
                 light_frames[frame] = 1;
             } else {
                 light_frames[frame] = 0;
@@ -38,9 +39,9 @@ void LightController::generate_light_frames(LightPattern* pattern) {
 
 void LightController::set_LED(LED_state state) {
     if (setting == ACTIVE_LOW) {
-        digitalWrite(3, !state);
+        digitalWrite(1, !state);
     } else {
-        digitalWrite(3, state);
+        digitalWrite(1, state);
     }
 }
 
@@ -52,35 +53,21 @@ void LightController::set_pattern(LightPattern* pattern) {
 
 void LightController::update() {
     current_frame += 1;
-    if (DEBUG) Serial.print("Current frame: ");
-    if (DEBUG) Serial.println(current_frame);
+    if (current_frame >= LIGHT_FRAME_COUNT) {
+        current_frame = 0; // jank
+    }
 
     // Ensure static lights don't flicker
     if (light_frames[current_frame] == light_frames[previous_frame]) {
         return;
     }
-
     previous_frame = current_frame;
 
     if (light_frames[current_frame]) {
-        set_LED(ON);
+        digitalWrite(1, HIGH);
     } else {
-        set_LED(OFF);
+        digitalWrite(1, LOW);
     }
-    
-    if (DEBUG) Serial.println(light_frames[current_frame]);
-
-    for (int frame = 0; frame < LIGHT_FRAME_COUNT; frame++) {
-        if (DEBUG) Serial.print(light_frames[frame]);
-    }
-
-    if (DEBUG) Serial.println();
-    if (DEBUG) Serial.print("New frame: ");
-    if (DEBUG) Serial.print(current_frame);
-    if (DEBUG) Serial.println();
-    // if (current_frame >= LIGHT_FRAME_COUNT) {
-    //     current_frame = 0;
-    // }
 }
 
 void LightController::dump_pattern() {
