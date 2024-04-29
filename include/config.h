@@ -2,7 +2,7 @@
 #define CONFIG_H 1
 
 // Debugging
-#define DEBUG 1
+#define DEBUG 0
 #define TELEMETRY_DEBUG 0
 
 // Wifi credentials
@@ -10,19 +10,21 @@
 #define WIFI_PASSWORD "12345678"
 
 // Server credentials
-#define SERVER_IP_STRING "192.168.177.206"
-#define MESSAGE_PORT    7090
-#define LOGIN_PORT      MESSAGE_PORT + 1 // For getting assigned an ID
-#define TX_PORT         MESSAGE_PORT + 2 
-#define RX_PORT         MESSAGE_PORT + 3
+#define SERVER_IP_STRING "192.168.123.206"
+#define SERVER_PORT      5050
 
 // Sensor sampling defaults
-#define ACCEL_MOVING_AVERAGE_LENGTH 10
-#define GYRO_MOVING_AVERAGE_LENGTH 50
+#define ACCEL_MOVING_AVERAGE_LENGTH 5
+#define GYRO_MOVING_AVERAGE_LENGTH 10
 
 // Timing defaults
 #define RECONNECT_DELAY 1000 // ms
-#define SENSOR_UPDATE_INTERVAL 100 // ms
-#define TRANSMISSION_INTERVAL 1000 // ms
+#define SENSOR_UPDATE_INTERVAL 1 // ms
+#define TRANSMISSION_INTERVAL 10 // ms
+
+// Lights
+#define LIGHT_PIN 1
+#define LIGHT_INTERVAL 1000 // ms
+#define LIGHT_FRAME_COUNT 100
 
 #endif

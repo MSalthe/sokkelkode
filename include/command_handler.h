@@ -1,7 +1,7 @@
 #include <ArduinoJson.h>
 #include "config.h"
 #include "sensor_data.h"
-#include "main_routine.h"
+#include <ESP8266WiFi.h>
 
 typedef enum CommandLine {
     COMMAND_SUCCESS,
@@ -10,4 +10,4 @@ typedef enum CommandLine {
     COMMAND_PANIC
 } CommandLine;
 
-CommandLine command_handler(JsonDocument deserialized_command, SensorDataContainer_IMU* sensor_data);
+CommandLine command_handler(JsonDocument deserialized_command, SensorDataContainer_IMU* sensor_data, WiFiClient* client);

@@ -1,6 +1,9 @@
 #include <ESP8266WiFi.h>
 #include "wifi_client.h"
 #include "config.h"
+#include "reception_routine.h"
+
+bool handshake_complete = false;
 
 void inform_connection_error(wl_status_t status) { // TODO add light patterns
   if (DEBUG) Serial.print("\n");
@@ -51,6 +54,9 @@ void wait_for_connection(wl_status_t previous_status) {
 
     while (WiFi.status() == previous_status) {
       if (DEBUG) Serial.print(".");
+      digitalWrite(3, HIGH); // Blinking LED to indicate waiting for connection
+      delay(500);
+      digitalWrite(3, LOW);
       delay(500);
     }
   } if (DEBUG) Serial.println(" Server connection established!");
@@ -80,10 +86,28 @@ void connect_to_host(WiFiClient* client) {
   if (connection_status != WL_CONNECTED) wait_for_connection(connection_status);
 
   if (!client -> connected() && WiFi.status() == WL_CONNECTED) wait_for_client(client);
+
+  handshake_protocol(client);
 }
 
 void disconnect_error_handling(WiFiClient* client) {
-    digitalWrite(LED_BUILTIN, HIGH); // Solid LED to indicates error state
+    digitalWrite(LED_BUILTIN, HIGH); // Solid LED to indicate error state
     if (DEBUG) Serial.println("Disconnected from server. Error code: " + String(client -> getWriteError()));
     delay(50);
+}
+
+void handshake_protocol(WiFiClient* client) {
+  if (DEBUG) Serial.println("Handshake protocol initiated.");
+
+  while (!handshake_complete) {
+    if (!client -> connected()) {
+      if (DEBUG) Serial.println("Connection lost during handshake.");
+      return;
+    }
+
+    reception_routine(client, NULL); // Automatically handles incoming commands. See command_handler.cpp
+    delay(10); //ms
+  }
+  
+  if (DEBUG) Serial.println("Handshake protocol completed.");
 }
