@@ -77,7 +77,16 @@ void wait_for_client(WiFiClient* client) {
 
     client -> connect(SERVER_IP_STRING, SERVER_PORT);
     if (DEBUG) Serial.print(".");
-    delay(500);
+    
+    digitalWrite(1, HIGH); // Blinking LED to indicate waiting for client handler
+    delay(10);
+    digitalWrite(1, LOW);
+    delay(50);
+    digitalWrite(1, HIGH);
+    delay(10);
+    digitalWrite(1, LOW);
+    delay(1000);
+  
   } if (DEBUG) Serial.println(" Server connection established!");
 }
 
@@ -97,6 +106,7 @@ void disconnect_error_handling(WiFiClient* client) {
 }
 
 void handshake_protocol(WiFiClient* client) {
+  handshake_complete = false;
   if (DEBUG) Serial.println("Handshake protocol initiated.");
 
   while (!handshake_complete) {
