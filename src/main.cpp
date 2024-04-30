@@ -5,7 +5,7 @@
 #include "sensor_data.h"
 #include "transmission_routine.h"
 #include "reception_routine.h" 
-#include "light_controller.h"
+#include "light_blinker.h"
 
 // Devices
 WiFiClient client;
@@ -42,21 +42,23 @@ void setup() {
   }
 }
 
-LightController light_controller;
+// LightController light_controller;
+Light_blinker light_controller(LIGHT_PIN);
 
 // Timing
-int sensor_update_interval = SENSOR_UPDATE_INTERVAL; // ms
+unsigned long sensor_update_interval = SENSOR_UPDATE_INTERVAL; // ms
 unsigned long sensor_last_update = 0;
 
-int transmission_interval = TRANSMISSION_INTERVAL; // ms
+unsigned long transmission_interval = TRANSMISSION_INTERVAL; // ms
 unsigned long transmission_last_update = 0;
 
 //int light_period = LIGHT_INTERVAL / LIGHT_FRAME_COUNT; // ms
-int light_period = 10; // ms
+unsigned long light_period = 10; // ms
 unsigned long light_last_update = 0;
 
 void loop() {
   connect_to_host(&client);
+  light_controller.set_interval(3950, 50); // Connected, idle
 
   while (client.connected()) {
 
@@ -79,11 +81,7 @@ void loop() {
     // Update lights
     if (millis() - light_last_update > light_period) {
         light_last_update = millis();
-
-        light_controller.update();
-        if (DEBUG) Serial.println("Light update");
-        light_controller.set_pattern(&light_controller.CONNECTED_IDLE);
-        light_controller.dump_pattern();
+        light_controller.fastupdate(&light_last_update, &light_period);
     }
     
     delay(update_delay);

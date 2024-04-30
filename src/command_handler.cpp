@@ -1,19 +1,14 @@
 #include "command_handler.h"
+#include "light_blinker.h"
 
+// Externs are a bit slow, but we're not supposed to receive commands at a high rate
 extern int session_id;
 extern int client_id;
 extern bool handshake_complete;
 extern int sensor_update_interval;
 extern int transmission_interval;
-
-void dummy_function() {
-    if (DEBUG)Serial.println("Dummy function");
-}
-
-void dummy_function_2(int value) {
-    if (DEBUG)Serial.println("Dummy function");
-    if (DEBUG)Serial.println(value);
-}
+extern int light_period;
+extern Light_blinker light_controller;
 
 void set_moving_average(String flag, int value, SensorDataContainer_IMU* sensor_data_container) {
     if (DEBUG) Serial.print("\nSet moving average for " + flag + " to " + value + "\n");
@@ -48,26 +43,32 @@ void request_id(WiFiClient* client) {
 
 void set_id(int value) {
     client_id = value;
-    if (DEBUG) Serial.print("\nSet client id to ");
-    if (DEBUG) Serial.print(value);
-    if (DEBUG) Serial.print("\n");
-
-    if (DEBUG) Serial.print("Client id: ");
-    if (DEBUG) Serial.print(client_id);
 }
 
 void set_session_id(int value) {
     session_id = value;
-    if (DEBUG) Serial.print("\nSet session id to ");
-    if (DEBUG) Serial.print(value);
-    if (DEBUG) Serial.print("\n");
-
-    if (DEBUG) Serial.print("Session id: ");
-    if (DEBUG) Serial.print(session_id);
 }
 
 void start() {
     handshake_complete = true;
+}
+
+void set_idle_lights() {
+    light_period = LIGHT_IDLE_TIMOUT;
+    light_controller.set_interval(3950, 50); // Connected, idle
+}
+
+void set_active_lights() {
+    light_period = LIGHT_ACTIVE_TIMOUT;
+    light_controller.set_interval(0, LIGHT_ACTIVE_TIMOUT); // Connected, active
+}
+
+void set_gameplay_state(int value) {
+    if (value == 0) {
+        set_idle_lights();
+    }else if (value == 1) {
+        set_active_lights();
+    }
 }
 
 CommandLine command_handler(JsonDocument deserialized_command, SensorDataContainer_IMU* sensor_data, WiFiClient* client) { // This is ugly af but since we're only implementing a few commands, the if chain with 1000 parameters should be fine
@@ -75,13 +76,7 @@ CommandLine command_handler(JsonDocument deserialized_command, SensorDataContain
     String flag         = deserialized_command["flag"];
     int value           = deserialized_command["value"];
 
-    if (command == "dummy") {
-        dummy_function();
-        return COMMAND_SUCCESS;
-    }else if (command == "dummy_2") {
-        dummy_function_2(value);
-        return COMMAND_SUCCESS;
-    }else if(command == "setmovingaverage") {
+    if(command == "setmovingaverage") {
         set_moving_average(flag, value, sensor_data);
         return COMMAND_SUCCESS;
     }else if(command == "setupdateinterval") {
@@ -99,6 +94,14 @@ CommandLine command_handler(JsonDocument deserialized_command, SensorDataContain
     }else if (command == "start") {
         start();
         return COMMAND_SUCCESS;
+    }else if (command == "set_idle_lights") {
+        set_idle_lights();
+        return COMMAND_SUCCESS;
+    }else if (command == "set_gameplay_state") {
+        set_gameplay_state(value);
+        return COMMAND_SUCCESS;
     }
-    return COMMAND_NOT_RECOGNIZED;
+
+    
+    return COMMAND_NOT_RECOGNIZED; // oopsie woopsie
 }
