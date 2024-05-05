@@ -97,6 +97,9 @@ CommandLine command_handler(JsonDocument deserialized_command, SensorDataContain
     }else if (command == "set_idle_lights") {
         set_idle_lights();
         return COMMAND_SUCCESS;
+    }else if (command == "set_active_lights") {
+        set_active_lights();
+        return COMMAND_SUCCESS;
     }else if (command == "set_gameplay_state") {
         set_gameplay_state(value);
         return COMMAND_SUCCESS;
