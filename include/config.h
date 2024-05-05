@@ -19,7 +19,7 @@
 
 // Timing defaults
 #define RECONNECT_DELAY 1000 // ms
-#define SENSOR_UPDATE_INTERVAL 20 // ms
+#define SENSOR_UPDATE_INTERVAL 10 // ms
 #define TRANSMISSION_INTERVAL 100 // ms // Note: should be increased during runtime by Game Master
 
 // Lights
